@@ -1,6 +1,7 @@
+// CategoryScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, ActivityIndicator, StyleSheet } from 'react-native';
-import { fetchCategories } from '../datamodel/api';
+import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native';
+import { fetchProducts } from '../datamodel/api';
 
 const CategoryScreen = ({ navigation }) => {
   const [categories, setCategories] = useState([]);
@@ -10,11 +11,11 @@ const CategoryScreen = ({ navigation }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchCategories();
+        const data = await fetchProducts();
         setCategories(data);
         setLoading(false);
       } catch (error) {
-        setError(error.message);
+        setError('Failed to fetch categories');
         setLoading(false);
       }
     };
@@ -22,23 +23,24 @@ const CategoryScreen = ({ navigation }) => {
     fetchData();
   }, []);
 
-  const handleCategoryPress = (categoryId) => {
-    navigation.navigate('Products', { categoryId });
+  const handleCategoryPress = (category) => {
+    navigation.navigate('Products', { category });
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Product Categories</Text>
+      <Text style={styles.title}>Categories</Text>
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : error ? (
-        <Text>Error: {error}</Text>
+        <Text>{error}</Text>
       ) : (
-        categories.map(category => (
+        categories.map((category, index) => (
           <Button
-            key={category.id}
-            title={category.name}
-            onPress={() => handleCategoryPress(category.id)}
+            key={index}
+            title={category}
+            onPress={() => handleCategoryPress(category)}
+            style={styles.button}
           />
         ))
       )}
@@ -57,6 +59,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#e0e0e0',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 5,
+    marginBottom: 10,
   },
 });
 

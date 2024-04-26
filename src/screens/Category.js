@@ -1,11 +1,11 @@
 // CategoryScreen.js
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { fetchProducts } from '../datamodel/api';
 
 const CategoryScreen = ({ navigation }) => {
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -27,22 +27,26 @@ const CategoryScreen = ({ navigation }) => {
     navigation.navigate('Products', { category });
   };
 
+  const renderCategoryItem = ({ item }) => (
+    <TouchableOpacity style={styles.categoryItem} onPress={() => handleCategoryPress(item)}>
+      <Text style={styles.categoryText}>{item}</Text>
+    </TouchableOpacity>
+  );
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Categories</Text>
-      {loading ? (
+      {isLoading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : error ? (
         <Text>{error}</Text>
       ) : (
-        categories.map((category, index) => (
-          <Button
-            key={index}
-            title={category}
-            onPress={() => handleCategoryPress(category)}
-            style={styles.button}
-          />
-        ))
+        <FlatList
+          data={categories}
+          renderItem={renderCategoryItem}
+          keyExtractor={(item, index) => index.toString()}
+          style={styles.categoryList}
+        />
       )}
     </View>
   );
@@ -51,21 +55,28 @@ const CategoryScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     paddingHorizontal: 20,
+    paddingTop: 45,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 20,
+    color: '#263A47'
   },
-  button: {
-    backgroundColor: '#e0e0e0',
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 5,
+  categoryList: {
+    width: '100%',
+  },
+  categoryItem: {
+    backgroundColor: '#728495',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
     marginBottom: 10,
+    borderRadius: 5,
+  },
+  categoryText: {
+    color: 'white',
+    fontSize: 18,
   },
 });
 

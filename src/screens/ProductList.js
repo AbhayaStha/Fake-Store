@@ -1,12 +1,12 @@
-// ProductListScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet, Image } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, StyleSheet, Image, TouchableOpacity, Button } from 'react-native';
 import { fetchProductsByCategory } from '../datamodel/api';
+import { Ionicons } from '@expo/vector-icons';
 
-const ProductListScreen = ({ route }) => {
+const ProductListScreen = ({ route, navigation }) => {
   const { category } = route.params;
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -24,7 +24,15 @@ const ProductListScreen = ({ route }) => {
     fetchData();
   }, [category]);
 
-  if (loading) {
+  const handleProductPress = (product) => {
+    navigation.navigate('ProductDetail', product);
+  };
+
+  const handleBackPress = () => {
+    navigation.goBack();
+  };
+
+  if (isLoading) {
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" color="#0000ff" />
@@ -42,20 +50,27 @@ const ProductListScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Products in {category}</Text>
+      <Text style={styles.title}>{category.charAt(0).toUpperCase() + category.slice(1)}</Text>
       <FlatList
         data={products}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View style={styles.productItem}>
-            <Image source={{ uri: item.image }} style={styles.image} />
-            <View style={styles.productDetails}>
-              <Text style={styles.productTitle}>{item.title}</Text>
-              <Text>${item.price}</Text>
+          <TouchableOpacity onPress={() => handleProductPress(item)}>
+            <View style={styles.productItem}>
+              <Image source={{ uri: item.image }} style={styles.image} />
+              <View style={styles.productDetails}>
+                <Text style={styles.productTitle}>{item.title}</Text>
+                <Text>Price: ${item.price}</Text>
+              </View>
             </View>
-          </View>
-        )}
-      />
+          </TouchableOpacity>
+        )}/>
+    <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={handleBackPress}>
+            <Ionicons name = 'backspace-outline' size={25} color='white'/>
+            <Text style={styles.buttonText}>Back</Text>
+        </TouchableOpacity>
+    </View>
     </View>
   );
 };
@@ -64,7 +79,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 45,
   },
   title: {
     fontSize: 24,
@@ -76,7 +91,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
-    paddingVertical: 10,
+    paddingVertical: 20,
   },
   image: {
     width: 80,
@@ -91,6 +106,25 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 5,
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+},
+button: {
+    backgroundColor: '#728495',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 5,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20
+},
+buttonText: {
+    color: 'white',
+    fontSize: 12,
+    marginLeft: 5,
+},
 });
 
 export default ProductListScreen;

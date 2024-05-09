@@ -1,4 +1,3 @@
-// CategoryScreen.js
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { fetchProducts } from '../datamodel/api';

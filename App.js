@@ -1,6 +1,4 @@
 // app.js
-
-import React from 'react';
 import { Provider, useSelector } from 'react-redux';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
@@ -16,6 +14,11 @@ import ShoppingCartScreen from './src/screens/ShoppingCartScreen';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
+function CartBadge() {
+  const totalItems = useSelector(state => state.cart.totalItems);
+  return totalItems;
+}
+
 function TabNavigator() {
   return (
     <Tab.Navigator
@@ -29,7 +32,7 @@ function TabNavigator() {
           }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarBadge: route.name === 'Shopping Cart' ? <CartBadge/> : null, // Use CartBadge component
+        tabBarBadge: route.name === 'Shopping Cart' ? <CartBadge/> : null,
       })}
       tabBarOptions={{
         tabBarActiveTintColor: 'blue',
@@ -44,24 +47,13 @@ function TabNavigator() {
 function MainStackNavigator() {
   return (
     <Stack.Navigator initialRouteName="Splash">
-      <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false, tabBarVisible: false }} />
       <Stack.Screen name="Categories" component={CategoryScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Products" component={ProductListScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ProductDetail" component={ProductDetailScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
-
-function CartBadge() {
-  const totalItems = useSelector(state => state.cart.totalItems);
-
-  if (totalItems > 0) {
-    return totalItems; // Display the total number of items as the badge
-  } else {
-    return null; // Don't display badge if there are no items
-  }
-}
-
 
 export default function App() {
   return (

@@ -6,8 +6,9 @@ import { addItem } from '../store/cartSlice';
 
 const ProductDetailScreen = ({ route, navigation }) => {
   const { id, price, title, description, image, rating } = route.params;
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null);
+  const [addingToCart, setAddingToCart] = useState(false); 
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -25,8 +26,16 @@ const ProductDetailScreen = ({ route, navigation }) => {
     fetchProduct();
   }, []);
 
-  const addToCart = () => {
-    dispatch(addItem({ id, price, title, description, image, rating }));
+  const addToCart = async () => {
+    setAddingToCart(true); 
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000)); 
+      dispatch(addItem({ id, price, title, description, image, rating }));
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    } finally {
+      setAddingToCart(false);
+    }
   };
 
   return (
@@ -52,8 +61,14 @@ const ProductDetailScreen = ({ route, navigation }) => {
                 <Text style={styles.buttonText}>Back</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.button} onPress={addToCart}>
-                <Ionicons name="cart" size={20} color="white" />
-                <Text style={styles.buttonText}>Add to Cart</Text>
+                {addingToCart ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <>
+                    <Ionicons name="cart" size={20} color="white" />
+                    <Text style={styles.buttonText}>Add to Cart</Text>
+                  </>
+                )}
               </TouchableOpacity>
             </View>
             <Text style={styles.descriptionHeader}>Description:</Text>

@@ -32,15 +32,14 @@ function TabNavigator() {
           }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarBadge: route.name === 'Shopping Cart' ? <CartBadge/> : null,
+        tabBarBadge: route.name === 'Shopping Cart' ? <CartBadge /> : null,
+        tabBarStyle: { display: 'flex' },
       })}
-      tabBarOptions={{
-        tabBarActiveTintColor: 'blue',
-        tabBarInactiveTintColor: 'gray',
-      }}>
+    >
       <Tab.Screen name="Product" component={MainStackNavigator} options={{ headerShown: false }} />
       <Tab.Screen name="Shopping Cart" component={ShoppingCartScreen} options={{ headerShown: false }} />
     </Tab.Navigator>
+
   );
 }
 

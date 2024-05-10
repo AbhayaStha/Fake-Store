@@ -97,6 +97,8 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     marginRight: 10,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
   },
   productDetails: {
     flex: 1,
@@ -118,7 +120,8 @@ button: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20
+    marginTop: 10,
+    marginBottom: 10
 },
 buttonText: {
     color: 'white',

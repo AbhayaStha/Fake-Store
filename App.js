@@ -1,5 +1,7 @@
+// app.js
+
 import React from 'react';
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -20,7 +22,6 @@ function TabNavigator() {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
-
           if (route.name === 'Product') {
             iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'Shopping Cart') {
@@ -28,14 +29,14 @@ function TabNavigator() {
           }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
+        tabBarBadge: route.name === 'Shopping Cart' ? <CartBadge/> : null, // Use CartBadge component
       })}
       tabBarOptions={{
         tabBarActiveTintColor: 'blue',
         tabBarInactiveTintColor: 'gray',
-        
       }}>
       <Tab.Screen name="Product" component={MainStackNavigator} options={{ headerShown: false }} />
-      <Tab.Screen name="Shopping Cart" component={ShoppingCartScreen} />
+      <Tab.Screen name="Shopping Cart" component={ShoppingCartScreen} options={{ headerShown: false }} />
     </Tab.Navigator>
   );
 }
@@ -50,6 +51,17 @@ function MainStackNavigator() {
     </Stack.Navigator>
   );
 }
+
+function CartBadge() {
+  const totalItems = useSelector(state => state.cart.totalItems);
+
+  if (totalItems > 0) {
+    return totalItems; // Display the total number of items as the badge
+  } else {
+    return null; // Don't display badge if there are no items
+  }
+}
+
 
 export default function App() {
   return (

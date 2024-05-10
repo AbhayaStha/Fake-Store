@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { fetchProductsByCategory } from '../datamodel/api';
+import { useDispatch } from 'react-redux';
+import { addItem } from '../store/cartSlice';
 
 const ProductDetailScreen = ({ route, navigation }) => {
-  const { price, description, image, rating } = route.params;
+  const { id, price, title, description, image, rating } = route.params;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -22,6 +24,10 @@ const ProductDetailScreen = ({ route, navigation }) => {
 
     fetchProduct();
   }, []);
+
+  const addToCart = () => {
+    dispatch(addItem({ id, price, title, description, image, rating }));
+  };
 
   return (
     <View style={styles.container}>
@@ -45,7 +51,7 @@ const ProductDetailScreen = ({ route, navigation }) => {
                 <Ionicons name="backspace-outline" size={25} color="white" />
                 <Text style={styles.buttonText}>Back</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={() => console.log('Add to cart pressed')}>
+              <TouchableOpacity style={styles.button} onPress={addToCart}>
                 <Ionicons name="cart" size={20} color="white" />
                 <Text style={styles.buttonText}>Add to Cart</Text>
               </TouchableOpacity>

@@ -1,10 +1,12 @@
+// ProductList.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet, Image, TouchableOpacity, Button } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { fetchProductsByCategory } from '../datamodel/api';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons'; 
 
 const ProductListScreen = ({ route, navigation }) => {
   const { category } = route.params;
+  // State variables for products, loading state, and error state
   const [products, setProducts] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,8 +24,9 @@ const ProductListScreen = ({ route, navigation }) => {
     };
 
     fetchData();
-  }, [category]);
+  }, [category]); 
 
+  // Handle pressing on a product item, navigates to ProductDetail screen
   const handleProductPress = (product) => {
     navigation.navigate('ProductDetail', product);
   };
@@ -64,13 +67,14 @@ const ProductListScreen = ({ route, navigation }) => {
               </View>
             </View>
           </TouchableOpacity>
-        )}/>
-    <View style={styles.buttonContainer}>
+        )}
+      />
+      <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handleBackPress}>
-            <Ionicons name = 'backspace-outline' size={25} color='white'/>
-            <Text style={styles.buttonText}>Back</Text>
+          <Ionicons name='backspace-outline' size={25} color='white' />
+          <Text style={styles.buttonText}>Back</Text>
         </TouchableOpacity>
-    </View>
+      </View>
     </View>
   );
 };
@@ -111,8 +115,8 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
-},
-button: {
+  },
+  button: {
     backgroundColor: '#728495',
     paddingHorizontal: 15,
     paddingVertical: 10,
@@ -121,13 +125,13 @@ button: {
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 10,
-    marginBottom: 10
-},
-buttonText: {
+    marginBottom: 10,
+  },
+  buttonText: {
     color: 'white',
     fontSize: 12,
     marginLeft: 5,
-},
+  },
 });
 
-export default ProductListScreen;
+export default ProductListScreen; 

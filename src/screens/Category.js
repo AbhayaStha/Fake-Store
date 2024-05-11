@@ -1,8 +1,10 @@
+//Category.js
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { fetchProducts } from '../datamodel/api';
+import { fetchProducts } from '../datamodel/api'; 
 
 const CategoryScreen = ({ navigation }) => {
+  // State variables for categories, loading state, and error state
   const [categories, setCategories] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -11,6 +13,7 @@ const CategoryScreen = ({ navigation }) => {
     const fetchData = async () => {
       try {
         const data = await fetchProducts();
+        // Update categories state with fetched data
         setCategories(data);
         setLoading(false);
       } catch (error) {
@@ -20,12 +23,14 @@ const CategoryScreen = ({ navigation }) => {
     };
 
     fetchData();
-  }, []);
+  }, []); 
 
+  // Handle category press and navigate to Products screen with selected category
   const handleCategoryPress = (category) => {
     navigation.navigate('Products', { category });
   };
 
+  // Render each category item
   const renderCategoryItem = ({ item }) => (
     <TouchableOpacity style={styles.categoryItem} onPress={() => handleCategoryPress(item)}>
       <Text style={styles.categoryText}>{item}</Text>
@@ -35,11 +40,11 @@ const CategoryScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Categories</Text>
-      {isLoading ? (
+      {isLoading ? ( 
         <ActivityIndicator size="large" color="#0000ff" />
-      ) : error ? (
+      ) : error ? ( 
         <Text>{error}</Text>
-      ) : (
+      ) : ( 
         <FlatList
           data={categories}
           renderItem={renderCategoryItem}

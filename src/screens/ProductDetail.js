@@ -1,3 +1,4 @@
+// ProductDetail.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -6,14 +7,18 @@ import { addItem } from '../store/cartSlice';
 
 const ProductDetailScreen = ({ route, navigation }) => {
   const { id, price, title, description, image, rating } = route.params;
-  const [loading, setLoading] = useState(true); 
+  
+  // State variables for loading, error, and adding to cart state
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [addingToCart, setAddingToCart] = useState(false); 
+  const [addingToCart, setAddingToCart] = useState(false);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
+        // Simulate loading delay for 1 second
         setTimeout(() => {
           setLoading(false);
         }, 1000);
@@ -26,15 +31,16 @@ const ProductDetailScreen = ({ route, navigation }) => {
     fetchProduct();
   }, []);
 
+  // Function to add item to cart
   const addToCart = async () => {
     setAddingToCart(true); 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000)); 
+      await new Promise(resolve => setTimeout(resolve, 1000));
       dispatch(addItem({ id, price, title, description, image, rating }));
     } catch (error) {
       console.error('Error adding to cart:', error);
     } finally {
-      setAddingToCart(false);
+      setAddingToCart(false); 
     }
   };
 

@@ -1,3 +1,4 @@
+// ShoppingCartScreen.js
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeItem, updateItemQuantity } from '../store/cartSlice';
@@ -60,7 +61,6 @@ const ShoppingCartScreen = () => {
       ) : (
         <>
           <View style={styles.topSection}>
-            {/* Use totalItems state to display total items count */}
             <Text>Total Items: {totalItems}</Text>
             <Text>Total Cost: ${cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}</Text>
           </View>

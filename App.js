@@ -1,10 +1,12 @@
 // app.js
+import React, { useEffect, useState } from 'react';
 import { Provider, useSelector } from 'react-redux';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import store from './src/store/store';
+import { initializeStore } from './src/store/store'; 
+
 import SplashScreen from './src/screens/SplashScreen';
 import CategoryScreen from './src/screens/Category';
 import ProductDetailScreen from './src/screens/ProductDetail';
@@ -39,7 +41,6 @@ function TabNavigator() {
       <Tab.Screen name="Product" component={MainStackNavigator} options={{ headerShown: false }} />
       <Tab.Screen name="Shopping Cart" component={ShoppingCartScreen} options={{ headerShown: false }} />
     </Tab.Navigator>
-
   );
 }
 
@@ -55,6 +56,21 @@ function MainStackNavigator() {
 }
 
 export default function App() {
+  const [store, setStore] = useState(null);
+
+  useEffect(() => {
+    const initializeReduxStore = async () => {
+      const initializedStore = await initializeStore();
+      setStore(initializedStore);
+    };
+
+    initializeReduxStore();
+  }, []);
+
+  if (!store) {
+    return null;
+  }
+
   return (
     <Provider store={store}>
       <NavigationContainer>

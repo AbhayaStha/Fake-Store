@@ -1,10 +1,11 @@
-//Category.js
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { fetchProducts } from '../datamodel/api'; 
+import { Text, View, StyleSheet, FlatList } from 'react-native';
+import { fetchProducts } from '../datamodel/api';
+import ProductCategoryItem from '../components/product/ProductCategoryItem';
+import LoadingIndicator from '../components/common/LoadingIndicator';
+import ErrorMessage from '../components/common/ErrorMessage';
 
 const CategoryScreen = ({ navigation }) => {
-  // State variables for categories, loading state, and error state
   const [categories, setCategories] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,7 +14,6 @@ const CategoryScreen = ({ navigation }) => {
     const fetchData = async () => {
       try {
         const data = await fetchProducts();
-        // Update categories state with fetched data
         setCategories(data);
         setLoading(false);
       } catch (error) {
@@ -23,28 +23,24 @@ const CategoryScreen = ({ navigation }) => {
     };
 
     fetchData();
-  }, []); 
+  }, []);
 
-  // Handle category press and navigate to Products screen with selected category
   const handleCategoryPress = (category) => {
     navigation.navigate('Products', { category });
   };
 
-  // Render each category item
   const renderCategoryItem = ({ item }) => (
-    <TouchableOpacity style={styles.categoryItem} onPress={() => handleCategoryPress(item)}>
-      <Text style={styles.categoryText}>{item}</Text>
-    </TouchableOpacity>
+    <ProductCategoryItem category={item} onPress={() => handleCategoryPress(item)} />
   );
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Categories</Text>
-      {isLoading ? ( 
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : error ? ( 
-        <Text>{error}</Text>
-      ) : ( 
+      {isLoading ? (
+        <LoadingIndicator />
+      ) : error ? (
+        <ErrorMessage message={error} />
+      ) : (
         <FlatList
           data={categories}
           renderItem={renderCategoryItem}
@@ -70,17 +66,6 @@ const styles = StyleSheet.create({
   },
   categoryList: {
     width: '100%',
-  },
-  categoryItem: {
-    backgroundColor: '#728495',
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    marginBottom: 10,
-    borderRadius: 5,
-  },
-  categoryText: {
-    color: 'white',
-    fontSize: 18,
   },
 });
 

@@ -1,14 +1,14 @@
-// ProductDetail.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { addItem } from '../store/cartSlice';
+import IconButton from '../components/common/IconButton';
+import LoadingIndicator from '../components/common/LoadingIndicator';
+import ErrorMessage from '../components/common/ErrorMessage';
 
 const ProductDetailScreen = ({ route, navigation }) => {
   const { id, price, title, description, image, rating } = route.params;
-  
-  // State variables for loading, error, and adding to cart state
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [addingToCart, setAddingToCart] = useState(false);
@@ -31,25 +31,24 @@ const ProductDetailScreen = ({ route, navigation }) => {
     fetchProduct();
   }, []);
 
-  // Function to add item to cart
   const addToCart = async () => {
-    setAddingToCart(true); 
+    setAddingToCart(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
       dispatch(addItem({ id, price, title, description, image, rating }));
     } catch (error) {
       console.error('Error adding to cart:', error);
     } finally {
-      setAddingToCart(false); 
+      setAddingToCart(false);
     }
   };
 
   return (
     <View style={styles.container}>
       {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <LoadingIndicator />
       ) : error ? (
-        <Text>Error: {error}</Text>
+        <ErrorMessage message={error} />
       ) : (
         <>
           <View style={styles.imageContainer}>
@@ -62,20 +61,17 @@ const ProductDetailScreen = ({ route, navigation }) => {
               </Text>
             </View>
             <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
-                <Ionicons name="backspace-outline" size={25} color="white" />
-                <Text style={styles.buttonText}>Back</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={addToCart}>
-                {addingToCart ? (
-                  <ActivityIndicator size="small" color="white" />
-                ) : (
-                  <>
-                    <Ionicons name="cart" size={20} color="white" />
-                    <Text style={styles.buttonText}>Add to Cart</Text>
-                  </>
-                )}
-              </TouchableOpacity>
+              <IconButton
+                iconName="backspace-outline"
+                text="Back"
+                onPress={() => navigation.goBack()}
+              />
+              <IconButton
+                iconName="cart"
+                text={addingToCart ? "Adding..." : "Add to Cart"}
+                onPress={addToCart}
+                loading={addingToCart}
+              />
             </View>
             <Text style={styles.descriptionHeader}>Description:</Text>
             <View style={styles.descriptionBox}>
@@ -136,21 +132,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     marginTop: 10,
     marginTop: 10,
-  },
-  button: {
-    backgroundColor: '#728495',
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 5,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 14,
-    marginLeft: 5,
   },
 });
 

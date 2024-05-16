@@ -1,21 +1,13 @@
-// ShoppingCartScreen.js
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeItem, updateItemQuantity } from '../store/cartSlice';
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import IconButton from '../components/common/IconButton';
 
 const ShoppingCartScreen = () => {
   const cartItems = useSelector(state => state.cart.items);
   const dispatch = useDispatch();
-  
-  // State to track the total number of items
-  const [totalItems, setTotalItems] = useState(0);
-
-  useEffect(() => {
-    // Calculate total items whenever cart items change
-    setTotalItems(cartItems.reduce((total, item) => total + item.quantity, 0));
-  }, [cartItems]);
 
   const increaseQuantity = (itemId) => {
     dispatch(updateItemQuantity({ id: itemId, quantity: cartItems.find(item => item.id === itemId).quantity + 1 }));
@@ -52,16 +44,16 @@ const ShoppingCartScreen = () => {
       </View>
     </View>
   );
-  
+
   return (
     <View style={styles.container}>
-    <Text style={styles.title}>Shopping Cart</Text>
+      <Text style={styles.title}>Shopping Cart</Text>
       {cartItems.length === 0 ? (
         <Text style={styles.emptyCartText}>Your shopping cart is empty</Text>
       ) : (
         <>
           <View style={styles.topSection}>
-            <Text>Total Items: {totalItems}</Text>
+            <Text>Total Items: {cartItems.reduce((total, item) => total + item.quantity, 0)}</Text>
             <Text>Total Cost: ${cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}</Text>
           </View>
           <FlatList

@@ -1,12 +1,13 @@
-// ProductList.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { fetchProductsByCategory } from '../datamodel/api';
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons';
+import ProductItem from '../components/product/ProductItem';
+import LoadingIndicator from '../components/common/LoadingIndicator';
+import ErrorMessage from '../components/common/ErrorMessage';
 
 const ProductListScreen = ({ route, navigation }) => {
   const { category } = route.params;
-  // State variables for products, loading state, and error state
   const [products, setProducts] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,9 +25,8 @@ const ProductListScreen = ({ route, navigation }) => {
     };
 
     fetchData();
-  }, [category]); 
+  }, [category]);
 
-  // Handle pressing on a product item, navigates to ProductDetail screen
   const handleProductPress = (product) => {
     navigation.navigate('ProductDetail', product);
   };
@@ -36,19 +36,11 @@ const ProductListScreen = ({ route, navigation }) => {
   };
 
   if (isLoading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
+    return <LoadingIndicator />;
   }
 
   if (error) {
-    return (
-      <View style={styles.container}>
-        <Text>Error: {error}</Text>
-      </View>
-    );
+    return <ErrorMessage message={error} />;
   }
 
   return (
@@ -58,23 +50,16 @@ const ProductListScreen = ({ route, navigation }) => {
         data={products}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleProductPress(item)}>
-            <View style={styles.productItem}>
-              <Image source={{ uri: item.image }} style={styles.image} />
-              <View style={styles.productDetails}>
-                <Text style={styles.productTitle}>{item.title}</Text>
-                <Text>Price: ${item.price}</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
+          <ProductItem
+            item={item}
+            onPress={() => handleProductPress(item)}
+          />
         )}
       />
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleBackPress}>
-          <Ionicons name='backspace-outline' size={25} color='white' />
-          <Text style={styles.buttonText}>Back</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity style={styles.button} onPress={handleBackPress}>
+        <Ionicons name='backspace-outline' size={25} color='white' />
+        <Text style={styles.buttonText}>Back</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -89,32 +74,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
-  },
-  productItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    paddingVertical: 20,
-  },
-  image: {
-    width: 80,
-    height: 80,
-    marginRight: 10,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 10,
-  },
-  productDetails: {
-    flex: 1,
-  },
-  productTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
   },
   button: {
     backgroundColor: '#728495',
@@ -134,4 +93,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProductListScreen; 
+export default ProductListScreen;

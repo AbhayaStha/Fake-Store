@@ -1,9 +1,11 @@
+// ShoppingCartScreen.js
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { removeItem, updateItemQuantity } from '../store/cartSlice';
+import { removeItem, updateItemQuantity, clearCart } from '../store/cartSlice';
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import IconButton from '../components/common/IconButton';
+import { addOrder } from '../store/ordersSlice';
 
 const ShoppingCartScreen = () => {
   const cartItems = useSelector(state => state.cart.items);
@@ -20,6 +22,15 @@ const ShoppingCartScreen = () => {
     } else {
       dispatch(removeItem({ id: itemId }));
     }
+  };
+  const handleCheckout = () => {
+    if (cartItems.length === 0) return;
+    const order = {
+      items: cartItems,
+      total: cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2),
+    };
+    dispatch(addOrder(order));
+    dispatch(clearCart());
   };
 
   const renderCartItem = ({ item }) => (
@@ -61,6 +72,9 @@ const ShoppingCartScreen = () => {
             renderItem={renderCartItem}
             keyExtractor={item => item.id.toString()}
           />
+          <TouchableOpacity style={styles.button} onPress={handleCheckout}>
+            <Text style={styles.buttonText}>Checkout</Text>
+          </TouchableOpacity>
         </>
       )}
     </View>

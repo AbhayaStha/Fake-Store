@@ -1,3 +1,4 @@
+// category.js
 import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, FlatList } from 'react-native';
 import { fetchProducts } from '../datamodel/api';

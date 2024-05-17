@@ -1,3 +1,4 @@
+// ProductList.js
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { fetchProductsByCategory } from '../datamodel/api';

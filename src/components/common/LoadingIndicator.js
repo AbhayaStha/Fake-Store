@@ -1,3 +1,4 @@
+// LoadingIndicator.js
 import React from 'react';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 

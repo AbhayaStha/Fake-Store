@@ -1,6 +1,7 @@
 // store.js
 import { configureStore } from '@reduxjs/toolkit';
 import cartReducer, { loadCart } from './cartSlice';
+import ordersReducer from './ordersSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const createStore = async () => {
@@ -8,6 +9,7 @@ const createStore = async () => {
   return configureStore({
     reducer: {
       cart: cartReducer,
+      orders: ordersReducer,
     },
     preloadedState: {
       cart: initialState,
@@ -29,3 +31,5 @@ export const initializeStore = async () => {
   const store = await createStore();
   return store;
 };
+
+

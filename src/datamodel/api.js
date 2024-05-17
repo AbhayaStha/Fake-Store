@@ -1,3 +1,4 @@
+// api.js
 const baseUrl = "https://fakestoreapi.com/";
 
 export const fetchProducts = async () => {

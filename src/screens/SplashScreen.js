@@ -1,3 +1,4 @@
+// SplashScreen.js
 import React, { useEffect } from 'react';
 import { Image, View, StyleSheet, Dimensions } from 'react-native';
 

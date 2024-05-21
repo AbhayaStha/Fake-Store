@@ -59,7 +59,7 @@ export const { addItem, removeItem, updateItemQuantity, clearCart } = cartSlice.
 
 export const loadCart = () => async dispatch => {
   const cartData = await loadCartFromStorage();
-  dispatch(cartSlice.actions.updateCart(cartData));
+  dispatch(cartSlice.actions.updateCart({ ...cartData, totalItems: cartData.items.length })); 
 };
 
 export default cartSlice.reducer;

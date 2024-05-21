@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { removeItem, updateItemQuantity, clearCart } from '../store/cartSlice';
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import IconButton from '../components/common/IconButton';
 import { addOrder } from '../store/ordersSlice';
 
 const ShoppingCartScreen = () => {

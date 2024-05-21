@@ -22,7 +22,7 @@ const ProductDetailScreen = ({ route, navigation }) => {
         // Simulate loading delay for 1 second
         setTimeout(() => {
           setLoading(false);
-        }, 1000);
+        }, 500);
       } catch (error) {
         setError('Failed to fetch product details');
         setLoading(false);

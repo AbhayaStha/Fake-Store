@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Provider, useSelector, useDispatch } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { initializeStore } from './src/store/store';
-import SplashScreen from './src/screens/SplashScreen';
 import CategoryScreen from './src/screens/Category';
 import ProductDetailScreen from './src/screens/ProductDetail';
 import ProductListScreen from './src/screens/ProductList';
@@ -18,17 +17,13 @@ import SignUpScreen from './src/screens/SignUpScreen';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function CartBadge() {
-  const totalItems = useSelector(state => state.cart.totalItems);
-  return totalItems; // Return the total number of items
-}
-
 function TabNavigator() {
   const totalItems = useSelector(state => state.cart.totalItems); // Moved out to use directly
   const isLoggedIn = useSelector(state => state.auth.isLoggedIn); // Check if the user is logged in
 
   return (
     <Tab.Navigator
+      initialRouteName="Profile"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
@@ -61,8 +56,7 @@ function TabNavigator() {
 
 function MainStackNavigator() {
   return (
-    <Stack.Navigator initialRouteName="Splash">
-      <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false, tabBarVisible: false }} />
+    <Stack.Navigator>
       <Stack.Screen name="Categories" component={CategoryScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Products" component={ProductListScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ProductDetail" component={ProductDetailScreen} options={{ headerShown: false }} />

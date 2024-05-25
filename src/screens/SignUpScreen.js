@@ -3,20 +3,33 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { signUp } from '../store/authSlice'; // Implement this action in your authSlice
+import { useNavigation } from '@react-navigation/native';
 
-const SignUpScreen = ({ navigation }) => {
+const SignUpScreen = () => {
+  const navigation = useNavigation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
 
-  const handleSignUp = () => {
-    dispatch(signUp({ name, email, password })).then(response => {
-      if (response.error) {
-        Alert.alert('Error', response.error.message);
+  const handleSignUp = async () => {
+    try {
+      const response = await dispatch(signUp({ name, email, password }));
+      console.log('Sign Up Response:', response); // Log the response
+      if (response.payload && response.payload.status === "OK") {
+        const successMessage = response.payload.message || 'Sign up successful';
+        Alert.alert('Success', successMessage);
+        navigation.navigate('UserProfile'); // Navigate to UserProfile upon successful sign-up
+      } else {
+        const errorMessage = response.payload.message || 'Sign up failed';
+        Alert.alert('Error', errorMessage);
       }
-    });
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    }
   };
+  
+  
 
   return (
     <View style={styles.container}>

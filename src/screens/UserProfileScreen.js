@@ -1,17 +1,29 @@
-// src/screens/UserProfileScreen.js
-import React, { useState } from 'react';
+//UserProfileScreen
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { signOut, updateUser } from '../store/authSlice'; // Implement these actions in your authSlice
+import { signOut, updateUser } from '../store/authSlice'; 
 
 const UserProfileScreen = () => {
   const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user);
+  
   const [editing, setEditing] = useState(false);
-  const [name, setName] = useState(user.name);
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
 
+  useEffect(() => {
+    if (user) {
+      setName(user.name);
+    }
+  }, [user]);
+
   const handleUpdate = () => {
+    if (!name || !password) {
+      Alert.alert('Error', 'Name and Password cannot be empty.');
+      return;
+    }
+
     dispatch(updateUser({ name, password })).then(response => {
       if (response.error) {
         Alert.alert('Error', response.error.message);
@@ -21,6 +33,14 @@ const UserProfileScreen = () => {
       }
     });
   };
+
+  if (!user) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.text}>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

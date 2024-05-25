@@ -1,8 +1,7 @@
-// authSlice.js
+// authSlice
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-// Update the URLs according to your fake store API documentation
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'http://192.168.1.108:3000';
 
 export const signIn = createAsyncThunk('auth/signIn', async (credentials, { rejectWithValue }) => {
   try {
@@ -46,10 +45,10 @@ export const signUp = createAsyncThunk('auth/signUp', async (credentials, { reje
 export const updateUser = createAsyncThunk('auth/updateUser', async (details, { rejectWithValue }) => {
   try {
     const response = await fetch(`${API_BASE_URL}/users/update`, {
-      method: 'PUT',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${details.token}`, // Assuming you use a token for auth
+        'Authorization': `Bearer ${user.token}`,
       },
       body: JSON.stringify(details),
     });
@@ -64,21 +63,21 @@ export const updateUser = createAsyncThunk('auth/updateUser', async (details, { 
   }
 });
 
-export const signOut = createAsyncThunk('auth/signOut', async (_, { rejectWithValue }) => {
+export const signOut = createAsyncThunk('auth/signOut', async (_, { rejectWithValue, dispatch }) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/users/signout`, {
-      method: 'POST',
-    });
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.message || 'Failed to sign out');
-    }
-    return data;
+    dispatch(resetAuthState());
+    return;
   } catch (error) {
     console.error('SignOut Error:', error.message);
     return rejectWithValue(error.message);
   }
 });
+
+export const resetAuthState = () => {
+  return {
+    type: 'auth/resetAuthState',
+  };
+};
 
 const authSlice = createSlice({
   name: 'auth',
@@ -88,11 +87,19 @@ const authSlice = createSlice({
     error: null,
     status: 'idle',
   },
-  reducers: {},
+  reducers: {
+    // Reducer to reset the authentication state
+    resetAuthState: (state) => {
+      state.user = null;
+      state.token = null;
+      state.error = null;
+      state.status = 'idle';
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(signIn.fulfilled, (state, action) => {
-        state.user = action.payload.user;
+        state.user = action.payload;
         state.token = action.payload.token;
         state.error = null;
       })
@@ -100,7 +107,7 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(signUp.fulfilled, (state, action) => {
-        state.user = action.payload.user;
+        state.user = action.payload;
         state.token = action.payload.token;
         state.error = null;
       })
@@ -113,16 +120,9 @@ const authSlice = createSlice({
       })
       .addCase(updateUser.rejected, (state, action) => {
         state.error = action.payload;
-      })
-      .addCase(signOut.fulfilled, (state) => {
-        state.user = null;
-        state.token = null;
-        state.error = null;
-      })
-      .addCase(signOut.rejected, (state, action) => {
-        state.error = action.payload;
       });
-  },
+  },  
 });
+
 
 export default authSlice.reducer;

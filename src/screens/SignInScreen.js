@@ -2,19 +2,29 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { signIn } from '../store/authSlice'; // Implement this action in your authSlice
+import { signIn } from '../store/authSlice'; 
+import { useNavigation } from '@react-navigation/native'; 
 
-const SignInScreen = ({ navigation }) => {
+const SignInScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
+  const navigation = useNavigation();   
 
   const handleSignIn = () => {
-    dispatch(signIn({ email, password })).then(response => {
-      if (response.error) {
-        Alert.alert('Error', 'Wrong email or password');
-      }
-    });
+    dispatch(signIn({ email, password }))
+      .then(response => {
+        console.log('Server Response:', response); // Log the server response
+        if (response.payload && response.payload.status === 'OK') {
+          navigation.navigate('UserProfile'); // Navigate to UserProfileScreen
+        } else {
+          Alert.alert('Error', 'Wrong email or password');
+        }
+      })
+      .catch(error => {
+        console.error('Sign In Error:', error);
+        Alert.alert('Error', 'Something went wrong. Please try again later.');
+      });
   };
 
   return (

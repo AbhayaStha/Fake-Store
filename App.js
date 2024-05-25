@@ -75,6 +75,7 @@ function AuthStackNavigator() {
     <Stack.Navigator>
       <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }} />
       <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="UserProfile" component={UserProfileScreen} options={{ headerShown: false}} />
     </Stack.Navigator>
   );
 }

@@ -1,4 +1,3 @@
-// authSlice
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 const API_BASE_URL = 'http://192.168.1.108:3000';
@@ -48,7 +47,7 @@ export const updateUser = createAsyncThunk('auth/updateUser', async (details, { 
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${user.token}`,
+        'Authorization': `Bearer ${details.token}`, // Ensure the token is passed correctly
       },
       body: JSON.stringify(details),
     });
@@ -63,13 +62,11 @@ export const updateUser = createAsyncThunk('auth/updateUser', async (details, { 
   }
 });
 
-export const signOut = createAsyncThunk('auth/signOut', async (_, { rejectWithValue, dispatch }) => {
+export const signOut = createAsyncThunk('auth/signOut', async (_, { dispatch }) => {
   try {
     dispatch(resetAuthState());
-    return;
   } catch (error) {
     console.error('SignOut Error:', error.message);
-    return rejectWithValue(error.message);
   }
 });
 
@@ -88,7 +85,6 @@ const authSlice = createSlice({
     status: 'idle',
   },
   reducers: {
-    // Reducer to reset the authentication state
     resetAuthState: (state) => {
       state.user = null;
       state.token = null;
@@ -120,9 +116,14 @@ const authSlice = createSlice({
       })
       .addCase(updateUser.rejected, (state, action) => {
         state.error = action.payload;
+      })
+      .addCase(signOut.fulfilled, (state) => {
+        state.user = null;
+        state.token = null;
+        state.error = null;
+        state.status = 'idle';
       });
   },  
 });
-
 
 export default authSlice.reducer;

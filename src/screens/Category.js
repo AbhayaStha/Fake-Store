@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     color: '#263A47'
   },
   categoryList: {
-    width: '100%',
+    width: '100%'
   },
 });
 

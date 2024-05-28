@@ -13,13 +13,14 @@ import MyOrdersScreen from './src/screens/MyOrdersScreen';
 import UserProfileScreen from './src/screens/UserProfileScreen';
 import SignInScreen from './src/screens/SignInScreen';
 import SignUpScreen from './src/screens/SignUpScreen';
+import { Alert } from 'react-native';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function TabNavigator() {
-  const totalItems = useSelector(state => state.cart.totalItems); // Moved out to use directly
-  const isLoggedIn = useSelector(state => state.auth.isLoggedIn); // Check if the user is logged in
+  const totalItems = useSelector(state => state.cart.totalItems); 
+  const isLoggedIn = useSelector(state => state.auth.isLoggedIn); 
 
   return (
     <Tab.Navigator
@@ -42,14 +43,50 @@ function TabNavigator() {
         tabBarStyle: { display: 'flex' },
       })}
     >
-      <Tab.Screen name="Product" component={MainStackNavigator} options={{ headerShown: false }} />
-      <Tab.Screen name="Shopping Cart" component={ShoppingCartScreen} options={{ headerShown: false }} />
-      <Tab.Screen name="My Orders" component={MyOrdersScreen} options={{ headerShown: false }} />
-      <Tab.Screen 
-        name="Profile" 
-        component={isLoggedIn ? UserProfileScreen : AuthStackNavigator} 
-        options={{ headerShown: false }} 
-      />
+      {isLoggedIn ? (
+        <>
+          <Tab.Screen name="Product" component={MainStackNavigator} options={{ headerShown: false }} />
+          <Tab.Screen name="Shopping Cart" component={ShoppingCartScreen} options={{ headerShown: false }} />
+          <Tab.Screen name="My Orders" component={MyOrdersScreen} options={{ headerShown: false }} />
+        </>
+      ) : (
+        <>
+          <Tab.Screen 
+            name="Product" 
+            listeners={{
+              tabPress: e => {
+                e.preventDefault();
+                Alert.alert('Not logged in', 'Please log in to access this feature');
+              },
+            }}
+            component={MainStackNavigator} 
+            options={{ headerShown: false }} 
+          />
+          <Tab.Screen 
+            name="Shopping Cart" 
+            listeners={{
+              tabPress: e => {
+                e.preventDefault();
+                Alert.alert('Not logged in', 'Please log in to access this feature');
+              },
+            }}
+            component={ShoppingCartScreen} 
+            options={{ headerShown: false }} 
+          />
+          <Tab.Screen 
+            name="My Orders" 
+            listeners={{
+              tabPress: e => {
+                e.preventDefault();
+                Alert.alert('Not logged in', 'Please log in to access this feature');
+              },
+            }}
+            component={MyOrdersScreen} 
+            options={{ headerShown: false }} 
+          />
+        </>
+      )}
+      <Tab.Screen name="Profile" component={isLoggedIn ? UserProfileScreen : AuthStackNavigator} options={{ headerShown: false }} />
     </Tab.Navigator>
   );
 }

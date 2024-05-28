@@ -110,7 +110,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     color: '#263A47',
-    textAlign: 'center',
   },
   sectionContainer: {
     marginBottom: 10,
@@ -119,7 +118,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#00aaff',
+    backgroundColor: '#728495',
     padding: 15,
     borderRadius: 5,
   },

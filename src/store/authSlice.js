@@ -83,6 +83,7 @@ const authSlice = createSlice({
     token: null,
     error: null,
     status: 'idle',
+    isLoggedIn: false,
   },
   reducers: {
     resetAuthState: (state) => {
@@ -90,22 +91,33 @@ const authSlice = createSlice({
       state.token = null;
       state.error = null;
       state.status = 'idle';
+      state.isLoggedIn = false;
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(signIn.fulfilled, (state, action) => {
-        state.user = action.payload;
-        state.token = action.payload.token;
-        state.error = null;
+        if (action.payload.status === 'OK') {
+          state.user = action.payload;
+          state.token = action.payload.token;
+          state.error = null;
+          state.isLoggedIn = true;
+        } else {
+          state.error = 'Failed to sign in';
+        }
       })
       .addCase(signIn.rejected, (state, action) => {
         state.error = action.payload;
       })
       .addCase(signUp.fulfilled, (state, action) => {
-        state.user = action.payload;
-        state.token = action.payload.token;
-        state.error = null;
+        if (action.payload.status === 'OK') {
+          state.user = action.payload;
+          state.token = action.payload.token;
+          state.error = null;
+          state.isLoggedIn = true;
+        } else {
+          state.error = 'Failed to sign up';
+        }
       })
       .addCase(signUp.rejected, (state, action) => {
         state.error = action.payload;
@@ -122,6 +134,7 @@ const authSlice = createSlice({
         state.token = null;
         state.error = null;
         state.status = 'idle';
+        state.isLoggedIn = false;
       });
   },  
 });

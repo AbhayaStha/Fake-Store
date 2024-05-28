@@ -20,6 +20,7 @@ const Tab = createBottomTabNavigator();
 
 function TabNavigator() {
   const totalItems = useSelector(state => state.cart.totalItems); 
+  const newOrdersCount = useSelector(state => state.orders.orders.filter(order => order.status === 'new').length);
   const isLoggedIn = useSelector(state => state.auth.isLoggedIn); 
 
   return (
@@ -39,8 +40,9 @@ function TabNavigator() {
           }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarBadge: route.name === 'Shopping Cart' && totalItems > 0 ? totalItems : null,
+        tabBarBadge: route.name === 'Shopping Cart' ? totalItems > 0 ? totalItems : null : route.name === 'My Orders' ? newOrdersCount > 0 ? newOrdersCount : null : null,
         tabBarStyle: { display: 'flex' },
+  
       })}
     >
       {isLoggedIn ? (
@@ -56,7 +58,7 @@ function TabNavigator() {
             listeners={{
               tabPress: e => {
                 e.preventDefault();
-                Alert.alert('Not logged in', 'Please log in to access this feature');
+                Alert.alert('Not logged in', 'You must log in to view this tab');
               },
             }}
             component={MainStackNavigator} 
@@ -67,7 +69,7 @@ function TabNavigator() {
             listeners={{
               tabPress: e => {
                 e.preventDefault();
-                Alert.alert('Not logged in', 'Please log in to access this feature');
+                Alert.alert('Not logged in', 'You must log in to view this tab');
               },
             }}
             component={ShoppingCartScreen} 
@@ -78,7 +80,7 @@ function TabNavigator() {
             listeners={{
               tabPress: e => {
                 e.preventDefault();
-                Alert.alert('Not logged in', 'Please log in to access this feature');
+                Alert.alert('Not logged in', 'You must log in to view this tab');
               },
             }}
             component={MyOrdersScreen} 

@@ -1,24 +1,24 @@
-import React, { useState, useEffect ,useCallback } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, ScrollView, Alert } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, Alert, ActivityIndicator, RefreshControl } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { payOrder, receiveOrder } from '../store/ordersSlice';
 import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
 
 
-
 const MyOrdersScreen = () => {
-  // const orders = useSelector(state => state.orders.orders);
   const [orders, setOrders] = useState([]);
-  const dispatch = useDispatch();
-  const user = useSelector(state => state.auth.user);
-  const API_BASE_URL = 'http://192.168.1.108:3000';
-
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [expandedSections, setExpandedSections] = useState({
     new: false,
     paid: false,
-    delivered: true,
+    delivered: false,
   });
+
+  const dispatch = useDispatch();
+  const user = useSelector(state => state.auth.user);
+  const API_BASE_URL = 'http://192.168.1.108:3000';
 
   const loadOrders = async () => {
     const token = user.token;
@@ -34,11 +34,13 @@ const MyOrdersScreen = () => {
         order_items: JSON.parse(order.order_items)
       }));
 
-      // setOrders(parsedOrders);
       setOrders(parsedOrders);
     } catch (error) {
       console.log(error)
       Alert.alert('Error', 'Failed to load orders. Please try again later.');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -48,14 +50,6 @@ const MyOrdersScreen = () => {
     }, [])
   );
 
-
-
-  useEffect(() => {
-    loadOrders();
-  }, []);
-  console.log(orders)
-
-
   const toggleSection = (section) => {
     setExpandedSections({
       ...expandedSections,
@@ -63,13 +57,65 @@ const MyOrdersScreen = () => {
     });
   };
 
-  const handlePayOrder = (orderId) => {
-    dispatch(payOrder(orderId));
+  const handlePayOrder = async (orderId) => {
+    try {
+      const token = user.token;
+      const response = await axios.post(`${API_BASE_URL}/orders/updateorder`, {
+        orderID: orderId,
+        isPaid: 1, 
+        isDelivered: 0,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+  
+      const updatedOrders = orders.map(order => {
+        if (order.id === orderId) {
+          return { ...order, is_paid: 1 }; 
+        }
+        return order;
+      });
+      setOrders(updatedOrders);
+  
+      Alert.alert('Success', 'Order payment successful!');
+    } catch (error) {
+      console.error('Pay Order API Error:', error);
+      Alert.alert('Error', 'Failed to pay order. Please try again later.');
+    }
   };
+  
 
-  const handleReceiveOrder = (orderId) => {
-    dispatch(receiveOrder(orderId));
+  const handleReceiveOrder = async (orderId) => {
+    try {
+      const token = user.token;
+      const response = await axios.post(`${API_BASE_URL}/orders/updateorder`, {
+        orderID: orderId,
+        isPaid: 1, 
+        isDelivered: 1, 
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const updatedOrders = orders.map(order => {
+        if (order.id === orderId) {
+          return { ...order, is_paid: 1, is_delivered: 1 }; 
+        }
+        return order;
+      });
+      setOrders(updatedOrders);
+  
+      Alert.alert('Success', 'Order received successfully!');
+    } catch (error) {
+      console.error('Receive Order API Error:', error);
+      Alert.alert('Error', 'Failed to receive order. Please try again later.');
+    }
   };
+  
 
   const calculateTotal = (items) => {
     return items.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
@@ -80,10 +126,10 @@ const MyOrdersScreen = () => {
       <View style={styles.orderItemContainer}>
         <View style={styles.orderInfoContainer}>
           <Text style={styles.orderText}>Order ID: {item.id}</Text>
-          <Text style={styles.orderText}>Items: </Text>
-          <Text style={styles.orderText}>Total: ${calculateTotal(item.items)}</Text>
+          <Text style={styles.orderText}>Items: {item.order_items.length}</Text>
+          <Text style={styles.orderText}>Total: ${calculateTotal(item.order_items)}</Text>
         </View>
-        {item.items.map((product, index) => (
+        {item.order_items.map((product, index) => (
           <View key={index} style={styles.itemBox}>
             <View style={styles.itemContainer}>
               <View style={styles.imageContainer}>
@@ -97,12 +143,12 @@ const MyOrdersScreen = () => {
             </View>
           </View>
         ))}
-        {item.status === 'new' && (
+        {item.is_paid === 0 && item.is_delivered === 0 && (
           <TouchableOpacity style={styles.button} onPress={() => handlePayOrder(item.id)}>
             <Text style={styles.buttonText}>Pay</Text>
           </TouchableOpacity>
         )}
-        {item.status === 'paid' && (
+        {item.is_paid === 1 && item.is_delivered === 0 && (
           <TouchableOpacity style={styles.button} onPress={() => handleReceiveOrder(item.id)}>
             <Text style={styles.buttonText}>Receive</Text>
           </TouchableOpacity>
@@ -131,13 +177,37 @@ const MyOrdersScreen = () => {
   const paidOrders = orders.filter(order => order.is_paid === 1 && order.is_delivered === 0);
   const deliveredOrders = orders.filter(order => order.is_delivered === 1);
 
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#728495" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>My Orders</Text>
-      {renderSection('New Orders', newOrders, 'new')}
-      {renderSection('Paid Orders', paidOrders, 'paid')}
-      {renderSection('Delivered Orders', deliveredOrders, 'delivered')}
+      <FlatList
+        data={[]}
+        renderItem={null}
+        ListHeaderComponent={
+          <>
+            {renderSection('New Orders', newOrders, 'new')}
+            {renderSection('Paid Orders', paidOrders, 'paid')}
+            {renderSection('Delivered Orders', deliveredOrders, 'delivered')}
+          </>
+        }
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              loadOrders();
+            }}
+          />
+        }
+      />
     </View>
   );
 };
@@ -148,6 +218,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 45,
     backgroundColor: '#ffffff',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
     fontSize: 28,

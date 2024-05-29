@@ -22,6 +22,7 @@ function TabNavigator() {
   const totalItems = useSelector(state => state.cart.totalItems); 
   const newOrdersCount = useSelector(state => state.orders.orders.filter(order => order.status === 'new').length);
   const isLoggedIn = useSelector(state => state.auth.isLoggedIn); 
+  
 
   return (
     <Tab.Navigator

@@ -1,11 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, ActivityIndicator, RefreshControl, Alert } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import { setOrders, setLoading, setError, clearOrders } from '../store/ordersSlice';
+import { setOrders, setLoading, setError } from '../store/ordersSlice';
 import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
-
-
 
 const MyOrdersScreen = () => {
   const dispatch = useDispatch();
@@ -19,7 +17,6 @@ const MyOrdersScreen = () => {
     delivered: false,
   });
 
-
   const loadOrders = async () => {
     const token = user.token;
     try {
@@ -28,18 +25,20 @@ const MyOrdersScreen = () => {
           Authorization: `Bearer ${token}`,
         }
       });
-      const data = await response.data;
+      const data = response.data;
+      console.log('Fetched data:', data);  // Debug log to check fetched data
+
       const parsedOrders = data.orders.map(order => ({
         ...order,
         order_items: JSON.parse(order.order_items)
       }));
 
-      dispatch(setOrders(parsedOrders));
+      dispatch(setOrders(parsedOrders));  // Dispatch the parsed orders array
     } catch (error) {
-      console.log(error)
+      console.log(error);
       Alert.alert('Error', 'Failed to load orders. Please try again later.');
     } finally {
-      setLoading(false);
+      dispatch(setLoading(false));  // Ensure this dispatches correctly
       setRefreshing(false);
     }
   };
@@ -47,7 +46,7 @@ const MyOrdersScreen = () => {
   useFocusEffect(
     useCallback(() => {
       loadOrders();
-    }, [loadOrders])
+    }, [dispatch])
   );
 
   const toggleSection = (section) => {
@@ -62,7 +61,7 @@ const MyOrdersScreen = () => {
       const token = user.token;
       const response = await axios.post(`${API_BASE_URL}/orders/updateorder`, {
         orderID: orderId,
-        isPaid: 1, 
+        isPaid: 1,
         isDelivered: 0,
       }, {
         headers: {
@@ -70,30 +69,29 @@ const MyOrdersScreen = () => {
           'Content-Type': 'application/json'
         }
       });
-  
+
       const updatedOrders = orders.map(order => {
         if (order.id === orderId) {
-          return { ...order, is_paid: 1 }; 
+          return { ...order, is_paid: 1 };
         }
         return order;
       });
-      setOrders(updatedOrders);
-  
+      dispatch(setOrders(updatedOrders));  // Correct dispatch method
+
       Alert.alert('Success', 'Order payment successful!');
     } catch (error) {
       console.error('Pay Order API Error:', error);
       Alert.alert('Error', 'Failed to pay order. Please try again later.');
     }
   };
-  
 
   const handleReceiveOrder = async (orderId) => {
     try {
       const token = user.token;
       const response = await axios.post(`${API_BASE_URL}/orders/updateorder`, {
         orderID: orderId,
-        isPaid: 1, 
-        isDelivered: 1, 
+        isPaid: 1,
+        isDelivered: 1,
       }, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -103,19 +101,18 @@ const MyOrdersScreen = () => {
 
       const updatedOrders = orders.map(order => {
         if (order.id === orderId) {
-          return { ...order, is_paid: 1, is_delivered: 1 }; 
+          return { ...order, is_paid: 1, is_delivered: 1 };
         }
         return order;
       });
-      setOrders(updatedOrders);
-  
+      dispatch(setOrders(updatedOrders));  // Correct dispatch method
+
       Alert.alert('Success', 'Order received successfully!');
     } catch (error) {
       console.error('Receive Order API Error:', error);
       Alert.alert('Error', 'Failed to receive order. Please try again later.');
     }
   };
-  
 
   const calculateTotal = (items) => {
     return items.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
@@ -141,7 +138,7 @@ const MyOrdersScreen = () => {
                 <Text style={styles.quantity}>Quantity: {product.quantity}</Text>
               </View>
             </View>
-          </View>
+            </View>
         ))}
         {item.is_paid === 0 && item.is_delivered === 0 && (
           <TouchableOpacity style={styles.button} onPress={() => handlePayOrder(item.id)}>
@@ -173,9 +170,9 @@ const MyOrdersScreen = () => {
     </View>
   );
 
-  const newOrders = orders.filter(order => order.is_paid === 0 && order.is_delivered === 0);
-  const paidOrders = orders.filter(order => order.is_paid === 1 && order.is_delivered === 0);
-  const deliveredOrders = orders.filter(order => order.is_delivered === 1);
+  const newOrders = orders ? orders.filter(order => order.is_paid === 0 && order.is_delivered === 0) : [];
+  const paidOrders = orders ? orders.filter(order => order.is_paid === 1 && order.is_delivered === 0) : [];
+  const deliveredOrders = orders ? orders.filter(order => order.is_delivered === 1) : [];
 
   if (loading) {
     return (

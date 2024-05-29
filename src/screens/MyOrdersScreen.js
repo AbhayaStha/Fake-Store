@@ -1,17 +1,60 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, { useState, useEffect ,useCallback } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, ScrollView, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { payOrder, receiveOrder } from '../store/ordersSlice';
+import axios from 'axios';
+import { useFocusEffect } from '@react-navigation/native';
+
+
 
 const MyOrdersScreen = () => {
-  const orders = useSelector(state => state.orders.orders);
+  // const orders = useSelector(state => state.orders.orders);
+  const [orders, setOrders] = useState([]);
   const dispatch = useDispatch();
+  const user = useSelector(state => state.auth.user);
+  const API_BASE_URL = 'http://192.168.1.108:3000';
 
   const [expandedSections, setExpandedSections] = useState({
     new: false,
     paid: false,
     delivered: true,
   });
+
+  const loadOrders = async () => {
+    const token = user.token;
+    try {
+      const response = await axios.get(`${API_BASE_URL}/orders/all`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+      const data = await response.data;
+      const parsedOrders = data.orders.map(order => ({
+        ...order,
+        order_items: JSON.parse(order.order_items)
+      }));
+
+      // setOrders(parsedOrders);
+      setOrders(parsedOrders);
+    } catch (error) {
+      console.log(error)
+      Alert.alert('Error', 'Failed to load orders. Please try again later.');
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      loadOrders();
+    }, [])
+  );
+
+
+
+  useEffect(() => {
+    loadOrders();
+  }, []);
+  console.log(orders)
+
 
   const toggleSection = (section) => {
     setExpandedSections({
@@ -37,7 +80,7 @@ const MyOrdersScreen = () => {
       <View style={styles.orderItemContainer}>
         <View style={styles.orderInfoContainer}>
           <Text style={styles.orderText}>Order ID: {item.id}</Text>
-          <Text style={styles.orderText}>Items: {item.items.length}</Text>
+          <Text style={styles.orderText}>Items: </Text>
           <Text style={styles.orderText}>Total: ${calculateTotal(item.items)}</Text>
         </View>
         {item.items.map((product, index) => (
@@ -78,15 +121,16 @@ const MyOrdersScreen = () => {
         <FlatList
           data={data}
           renderItem={renderOrderItem}
-          keyExtractor={item => item.id.toString()}
+          keyExtractor={(item) => `${sectionKey}-${item.id}`}
         />
       )}
     </View>
   );
 
-  const newOrders = orders.filter(order => order.status === 'new');
-  const paidOrders = orders.filter(order => order.status === 'paid');
-  const deliveredOrders = orders.filter(order => order.status === 'delivered');
+  const newOrders = orders.filter(order => order.is_paid === 0 && order.is_delivered === 0);
+  const paidOrders = orders.filter(order => order.is_paid === 1 && order.is_delivered === 0);
+  const deliveredOrders = orders.filter(order => order.is_delivered === 1);
+
 
   return (
     <View style={styles.container}>
@@ -133,7 +177,7 @@ const styles = StyleSheet.create({
   orderItemContainer: {
     backgroundColor: '#f0f0f0',
     borderRadius: 10,
-    marginBottom: 10,
+    marginBottom: 30,
     padding: 15,
   },
   orderInfoContainer: {

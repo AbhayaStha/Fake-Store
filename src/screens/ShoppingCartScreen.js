@@ -2,13 +2,18 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeItem, updateItemQuantity, clearCart } from '../store/cartSlice';
-import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { addOrder } from '../store/ordersSlice';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const ShoppingCartScreen = () => {
   const cartItems = useSelector(state => state.cart.items);
   const dispatch = useDispatch();
+  const user = useSelector(state => state.auth.user);
+  const API_BASE_URL = 'http://192.168.1.108:3000';
 
   const increaseQuantity = (itemId) => {
     dispatch(updateItemQuantity({ id: itemId, quantity: cartItems.find(item => item.id === itemId).quantity + 1 }));
@@ -28,8 +33,31 @@ const ShoppingCartScreen = () => {
       items: cartItems,
       total: cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2),
     };
+    OrderOnline();
     dispatch(addOrder(order));
     dispatch(clearCart());
+  };
+
+  const OrderOnline = async () => {
+    const token = user.token;
+    try {
+      const response = await axios.post(`${API_BASE_URL}/orders/neworder`, {
+        items: cartItems
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.status === 200) {
+        Alert.alert('Success', 'Order is placed successfully.');
+        await AsyncStorage.removeItem('cartItems');
+      } else {
+        Alert.alert('Error', 'Failed to order');
+      }
+    } catch (error) {
+      console.error('Error updating order:', error);
+      Alert.alert('Error', 'Failed to order. Please try again later.');
+    }
   };
 
   const renderCartItem = ({ item }) => (

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, Alert, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { signOut, updateUser } from '../store/authSlice'; 
 import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 
 const UserProfileScreen = () => {
   const dispatch = useDispatch();
@@ -45,7 +46,7 @@ const UserProfileScreen = () => {
   if (status === 'loading') {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#728495" />
         <Text style={styles.text}>Loading...</Text>
       </View>
     );
@@ -78,8 +79,14 @@ const UserProfileScreen = () => {
             secureTextEntry
           />
           <View style={styles.buttonContainer}>
-            <Button title="Confirm" onPress={handleUpdate} color="#4CAF50" />
-            <Button title="Cancel" onPress={() => setEditing(false)} color="#f44336" />
+            <TouchableOpacity style={styles.button} onPress={handleUpdate}>
+              <Ionicons name='checkmark-circle' size={24} color='green' />
+              <Text style={styles.buttonText}>Confirm</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => setEditing(false)}>
+              <Ionicons name='close-circle' size={24} color='red' />
+              <Text style={styles.buttonText}>Cancel</Text>
+            </TouchableOpacity>
           </View>
         </>
       ) : (
@@ -89,8 +96,14 @@ const UserProfileScreen = () => {
           <Text style={styles.label}>Email:</Text>
           <Text style={styles.text}>{user.email}</Text>
           <View style={styles.buttonContainer}>
-            <Button title="Update" onPress={() => setEditing(true)} color="#2196F3" />
-            <Button title="Sign Out" onPress={() => dispatch(signOut())} color="#f44336" />
+            <TouchableOpacity style={[styles.button, { backgroundColor: '#ccc' }]} onPress={() => setEditing(true)}>
+              <Ionicons name='create' size={24} color='black' />
+              <Text style={[styles.buttonText, { color: 'black' }]}>Update</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.button, { backgroundColor: '#728495' }]} onPress={() => dispatch(signOut())}>
+              <Ionicons name='log-out' size={24} color='white' />
+              <Text style={[styles.buttonText, { color: 'white' }]}>Sign Out</Text>
+            </TouchableOpacity>
           </View>
         </>
       )}
@@ -138,6 +151,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: 20,
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    marginLeft: 5,
+    fontSize: 16,
   },
 });
 

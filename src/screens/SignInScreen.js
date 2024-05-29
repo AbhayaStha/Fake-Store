@@ -1,9 +1,9 @@
-// src/screens/SignInScreen.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { signIn } from '../store/authSlice'; 
 import { useNavigation } from '@react-navigation/native'; 
+import { Ionicons } from '@expo/vector-icons';
 
 const SignInScreen = () => {
   const [email, setEmail] = useState('');
@@ -14,9 +14,9 @@ const SignInScreen = () => {
   const handleSignIn = () => {
     dispatch(signIn({ email, password }))
       .then(response => {
-        console.log('Server Response:', response); // Log the server response
+        console.log('Server Response:', response); 
         if (response.payload && response.payload.status === 'OK') {
-          navigation.navigate('UserProfile'); // Navigate to UserProfileScreen
+          navigation.navigate('UserProfile'); 
         } else {
           Alert.alert('Error', 'Wrong email or password');
         }
@@ -44,12 +44,18 @@ const SignInScreen = () => {
         secureTextEntry
       />
       <View style={styles.buttonContainer}>
-        <Button title="Clear" onPress={() => { setEmail(''); setPassword(''); }} />
-        <Button title="Sign In" onPress={handleSignIn} />
+        <TouchableOpacity style={[styles.button, { backgroundColor: '#ccc' }]} onPress={() => { setEmail(''); setPassword(''); }}>
+          <Ionicons name='close-circle-outline' size={24} color='black' />
+          <Text style={styles.buttonText}>Clear</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.button, { backgroundColor: '#728495' }]} onPress={handleSignIn}>
+          <Ionicons name='log-in-outline' size={24} color='white' />
+          <Text style={[styles.buttonText, { color: 'white' }]}>Sign In</Text>
+        </TouchableOpacity>
       </View>
-      <Text style={styles.switchText} onPress={() => navigation.navigate('SignUp')}>
-        Switch to: sign up
-      </Text>
+      <TouchableOpacity style={styles.switchTextContainer} onPress={() => navigation.navigate('SignUp')}>
+        <Text style={styles.switchText}>Switch to: sign up</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -75,11 +81,27 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    marginTop: 20,
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    marginLeft: 10,
+    fontSize: 16,
+  },
+  switchTextContainer: {
+    marginTop: 20,
+    alignItems: 'center',
   },
   switchText: {
-    textAlign: 'center',
-    marginTop: 20,
-    color: 'blue',
+    color: 'black',
+    fontSize: 16,
+    fontStyle: 'italic', 
+    color: 'blue' 
   },
 });
 

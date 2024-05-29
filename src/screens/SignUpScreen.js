@@ -1,9 +1,9 @@
-// src/screens/SignUpScreen.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { signUp } from '../store/authSlice'; // Implement this action in your authSlice
-import { useNavigation } from '@react-navigation/native';
+import { signUp } from '../store/authSlice'; 
+import { useNavigation } from '@react-navigation/native'; 
+import { Ionicons } from '@expo/vector-icons';
 
 const SignUpScreen = () => {
   const navigation = useNavigation();
@@ -28,8 +28,6 @@ const SignUpScreen = () => {
       Alert.alert('Error', error.message);
     }
   };
-  
-  
 
   return (
     <View style={styles.container}>
@@ -54,12 +52,18 @@ const SignUpScreen = () => {
         secureTextEntry
       />
       <View style={styles.buttonContainer}>
-        <Button title="Clear" onPress={() => { setName(''); setEmail(''); setPassword(''); }} />
-        <Button title="Sign Up" onPress={handleSignUp} />
+        <TouchableOpacity style={[styles.button, { backgroundColor: '#ccc' }]} onPress={() => { setName(''); setEmail(''); setPassword(''); }}>
+          <Ionicons name='close-circle-outline' size={24} color='black' />
+          <Text style={styles.buttonText}>Clear</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.button, { backgroundColor: '#728495' }]} onPress={handleSignUp}>
+          <Ionicons name='person-add-outline' size={20} color='white' />
+          <Text style={[styles.buttonText, { color: 'white' }]}>Sign Up</Text>
+        </TouchableOpacity>
       </View>
-      <Text style={styles.switchText} onPress={() => navigation.navigate('SignIn')}>
-        Switch to: sign in
-      </Text>
+      <TouchableOpacity style={styles.switchTextContainer} onPress={() => navigation.navigate('SignIn')}>
+        <Text style={styles.switchText}>Switch to: sign in</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -85,11 +89,27 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    marginTop: 20,
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    marginLeft: 10,
+    fontSize: 16,
+  },
+  switchTextContainer: {
+    marginTop: 20,
+    alignItems: 'center',
   },
   switchText: {
-    textAlign: 'center',
-    marginTop: 20,
-    color: 'blue',
+    color: 'black',
+    fontSize: 16,
+    fontStyle: 'italic', 
+    color: 'blue'
   },
 });
 

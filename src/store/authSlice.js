@@ -1,4 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { clearOrders } from './ordersSlice';
+
 
 const API_BASE_URL = 'http://192.168.1.108:3000';
 
@@ -65,6 +67,7 @@ export const updateUser = createAsyncThunk('auth/updateUser', async (details, { 
 export const signOut = createAsyncThunk('auth/signOut', async (_, { dispatch }) => {
   try {
     dispatch(resetAuthState());
+    dispatch(clearOrders());
   } catch (error) {
     console.error('SignOut Error:', error.message);
   }

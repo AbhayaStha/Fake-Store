@@ -5,6 +5,7 @@ import { signOut, updateUser } from '../store/authSlice';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 
+
 const UserProfileScreen = () => {
   const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user);

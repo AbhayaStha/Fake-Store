@@ -1,14 +1,17 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, Alert, ActivityIndicator, RefreshControl } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { payOrder, receiveOrder } from '../store/ordersSlice';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, ActivityIndicator, RefreshControl, Alert } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
+import { setOrders, setLoading, setError, clearOrders } from '../store/ordersSlice';
 import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
 
 
+
 const MyOrdersScreen = () => {
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const { orders, loading, error } = useSelector(state => state.orders);
+  const user = useSelector(state => state.auth.user);
+  const API_BASE_URL = 'http://192.168.1.108:3000';
   const [refreshing, setRefreshing] = useState(false);
   const [expandedSections, setExpandedSections] = useState({
     new: false,
@@ -16,8 +19,6 @@ const MyOrdersScreen = () => {
     delivered: false,
   });
 
-  const user = useSelector(state => state.auth.user);
-  const API_BASE_URL = 'http://192.168.1.108:3000';
 
   const loadOrders = async () => {
     const token = user.token;
@@ -33,7 +34,7 @@ const MyOrdersScreen = () => {
         order_items: JSON.parse(order.order_items)
       }));
 
-      setOrders(parsedOrders);
+      dispatch(setOrders(parsedOrders));
     } catch (error) {
       console.log(error)
       Alert.alert('Error', 'Failed to load orders. Please try again later.');
@@ -46,7 +47,7 @@ const MyOrdersScreen = () => {
   useFocusEffect(
     useCallback(() => {
       loadOrders();
-    }, [])
+    }, [loadOrders])
   );
 
   const toggleSection = (section) => {

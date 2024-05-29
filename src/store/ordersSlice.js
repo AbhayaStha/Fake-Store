@@ -1,35 +1,38 @@
+// ordersSlice.js
+
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   orders: [],
-  newOrdersCount: 0,
+  loading: false,
+  error: null,
 };
 
 export const ordersSlice = createSlice({
   name: 'orders',
   initialState,
   reducers: {
-    addOrder: (state, action) => {
-      state.orders.push({ id: state.orders.length + 1, ...action.payload, status: 'new' });
-      state.newOrdersCount++;
+    setOrders: (state, action) => {
+      state.orders = action.payload;
+      state.loading = false;
+      state.error = null;
     },
-    payOrder: (state, action) => {
-      const order = state.orders.find(order => order.id === action.payload);
-      if (order) {
-        order.status = 'paid';
-        state.newOrdersCount--;
-      }
+    setLoading: (state, action) => {
+      state.loading = action.payload;
+      state.error = null;
     },
-    receiveOrder: (state, action) => {
-      const order = state.orders.find(order => order.id === action.payload);
-      if (order) {
-        order.status = 'delivered';
-        state.newOrdersCount--; 
-      }
+    setError: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    clearOrders: (state) => {
+      state.orders = [];
+      state.loading = false;
+      state.error = null;
     },
   },
 });
 
-export const { addOrder, payOrder, receiveOrder } = ordersSlice.actions;
+export const { setOrders, setLoading, setError, clearOrders } = ordersSlice.actions;
 
 export default ordersSlice.reducer;

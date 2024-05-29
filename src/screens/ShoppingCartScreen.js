@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { removeItem, updateItemQuantity, clearCart } from '../store/cartSlice';
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { addOrder } from '../store/ordersSlice';
+import { setOrders } from '../store/ordersSlice';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -34,7 +34,7 @@ const ShoppingCartScreen = () => {
       total: cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2),
     };
     OrderOnline();
-    dispatch(addOrder(order));
+    dispatch(setOrders(order));
     dispatch(clearCart());
   };
 

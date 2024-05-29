@@ -1,5 +1,5 @@
 // ShoppingCartScreen.js
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeItem, updateItemQuantity, clearCart } from '../store/cartSlice';
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
@@ -99,8 +99,10 @@ const ShoppingCartScreen = () => {
             renderItem={renderCartItem}
             keyExtractor={item => item.id.toString()}
           />
-          <TouchableOpacity style={styles.button} onPress={handleCheckout}>
-            <Text style={styles.buttonText}>Checkout</Text>
+
+          <TouchableOpacity style={styles.checkoutButton} onPress={handleCheckout}>
+            <Ionicons name='cart-outline' size={20} color='white' />
+            <Text style={[styles.buttonText, { color: 'white' }]}>Checkout</Text>
           </TouchableOpacity>
         </>
       )}
@@ -172,6 +174,17 @@ const styles = StyleSheet.create({
   quantity: {
     paddingHorizontal: 10,
     fontSize: 16,
+  },
+  checkoutButton: {
+    backgroundColor: '#728495', 
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 5,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 10,
   },
 });
 

@@ -14,15 +14,15 @@ import UserProfileScreen from './src/screens/UserProfileScreen';
 import SignInScreen from './src/screens/SignInScreen';
 import SignUpScreen from './src/screens/SignUpScreen';
 import { Alert } from 'react-native';
-import { signOutUser, signInUser, fetchCart, fetchOrders } from './src/store/authSlice';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function TabNavigator() {
   const totalItems = useSelector(state => state.cart.totalItems); 
-  const newOrdersCount = useSelector(state => state.orders.orders.filter(order => order.status === 'new').length);
+  const newOrdersCount = useSelector(state => state.orders.newOrdersCount); 
   const isLoggedIn = useSelector(state => state.auth.isLoggedIn); 
+
 
   return (
     <Tab.Navigator

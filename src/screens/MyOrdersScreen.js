@@ -16,7 +16,6 @@ const MyOrdersScreen = () => {
     delivered: false,
   });
 
-  const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user);
   const API_BASE_URL = 'http://192.168.1.108:3000';
 

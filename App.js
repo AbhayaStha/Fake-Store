@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Provider, useSelector } from 'react-redux';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -14,6 +14,7 @@ import UserProfileScreen from './src/screens/UserProfileScreen';
 import SignInScreen from './src/screens/SignInScreen';
 import SignUpScreen from './src/screens/SignUpScreen';
 import { Alert } from 'react-native';
+import { signOutUser, signInUser, fetchCart, fetchOrders } from './src/store/authSlice';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -22,7 +23,6 @@ function TabNavigator() {
   const totalItems = useSelector(state => state.cart.totalItems); 
   const newOrdersCount = useSelector(state => state.orders.orders.filter(order => order.status === 'new').length);
   const isLoggedIn = useSelector(state => state.auth.isLoggedIn); 
-  
 
   return (
     <Tab.Navigator
@@ -41,9 +41,8 @@ function TabNavigator() {
           }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarBadge: route.name === 'Shopping Cart' ? totalItems > 0 ? totalItems : null : route.name === 'My Orders' ? newOrdersCount > 0 ? newOrdersCount : null : null,
+        tabBarBadge: route.name === 'Shopping Cart' ? (isLoggedIn && totalItems > 0 ? totalItems : null) : (route.name === 'My Orders' ? (isLoggedIn && newOrdersCount > 0 ? newOrdersCount : null) : null),
         tabBarStyle: { display: 'flex' },
-  
       })}
     >
       {isLoggedIn ? (

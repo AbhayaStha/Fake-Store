@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, ActivityIndicator, RefreshControl, Alert } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import { setOrders, setLoading, setError } from '../store/ordersSlice';
+import { setOrders, setLoading } from '../store/ordersSlice';
 import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -26,19 +26,19 @@ const MyOrdersScreen = () => {
         }
       });
       const data = response.data;
-      console.log('Fetched data:', data);  // Debug log to check fetched data
+      console.log('Fetched data:', data);  
 
       const parsedOrders = data.orders.map(order => ({
         ...order,
         order_items: JSON.parse(order.order_items)
       }));
 
-      dispatch(setOrders(parsedOrders));  // Dispatch the parsed orders array
+      dispatch(setOrders(parsedOrders));  
     } catch (error) {
       console.log(error);
       Alert.alert('Error', 'Failed to load orders. Please try again later.');
     } finally {
-      dispatch(setLoading(false));  // Ensure this dispatches correctly
+      dispatch(setLoading(false));  
       setRefreshing(false);
     }
   };
@@ -76,7 +76,7 @@ const MyOrdersScreen = () => {
         }
         return order;
       });
-      dispatch(setOrders(updatedOrders));  // Correct dispatch method
+      dispatch(setOrders(updatedOrders));  
 
       Alert.alert('Success', 'Order payment successful!');
     } catch (error) {
@@ -105,7 +105,7 @@ const MyOrdersScreen = () => {
         }
         return order;
       });
-      dispatch(setOrders(updatedOrders));  // Correct dispatch method
+      dispatch(setOrders(updatedOrders));  
 
       Alert.alert('Success', 'Order received successfully!');
     } catch (error) {

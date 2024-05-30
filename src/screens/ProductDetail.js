@@ -1,7 +1,6 @@
 // ProductDetail.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { addItem } from '../store/cartSlice';
 import IconButton from '../components/common/IconButton';

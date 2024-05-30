@@ -15,11 +15,11 @@ const SignUpScreen = () => {
   const handleSignUp = async () => {
     try {
       const response = await dispatch(signUp({ name, email, password }));
-      console.log('Sign Up Response:', response); // Log the response
+      console.log('Sign Up Response:', response); 
       if (response.payload && response.payload.status === "OK") {
         const successMessage = response.payload.message || 'Sign up successful';
         Alert.alert('Success', successMessage);
-        navigation.navigate('UserProfile'); // Navigate to UserProfile upon successful sign-up
+        navigation.navigate('UserProfile');
       } else {
         const errorMessage = response.payload.message || 'Sign up failed';
         Alert.alert('Error', errorMessage);

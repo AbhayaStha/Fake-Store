@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Alert, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { signOut, updateUser } from '../store/authSlice'; 
+import { signIn, signOut, updateUser } from '../store/authSlice'; 
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -24,7 +24,7 @@ const UserProfileScreen = () => {
 
   useEffect(() => {
     if (status === 'idle' && !user) {
-      navigation.navigate('SignIn'); // Navigate to the SignIn screen when user logs out
+      navigation.navigate('SignIn'); 
     }
   }, [status, user, navigation]);
 

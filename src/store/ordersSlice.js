@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   orders: [],
-  newOrdersCount: 0, // Add newOrdersCount to the state
+  newOrdersCount: 0,
   loading: false,
   error: null,
 };

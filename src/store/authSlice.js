@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { clearOrders } from './ordersSlice';
 
-
 const API_BASE_URL = 'http://192.168.1.108:3000';
 
 export const signIn = createAsyncThunk('auth/signIn', async (credentials, { rejectWithValue }) => {
@@ -49,7 +48,7 @@ export const updateUser = createAsyncThunk('auth/updateUser', async (details, { 
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${details.token}`, // Ensure the token is passed correctly
+        'Authorization': `Bearer ${details.token}`,
       },
       body: JSON.stringify(details),
     });
@@ -127,6 +126,7 @@ const authSlice = createSlice({
       })
       .addCase(updateUser.fulfilled, (state, action) => {
         state.user = action.payload.user;
+        state.status = 'idle';  // Set status to idle after successful update
         state.error = null;
       })
       .addCase(updateUser.rejected, (state, action) => {
@@ -139,7 +139,7 @@ const authSlice = createSlice({
         state.status = 'idle';
         state.isLoggedIn = false;
       });
-  },  
+  },
 });
 
 export default authSlice.reducer;
